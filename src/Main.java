@@ -1,6 +1,6 @@
 import com.gupao.homework.factory.IAppliances;
-import com.gupao.homework.factory.abstr.AbstractFactory;
-import com.gupao.homework.factory.abstr.AppliancesFactory;
+import com.gupao.homework.factory.abstr.GreeAppliancesFactory;
+import com.gupao.homework.factory.abstr.HaierAppliancesFactory;
 import com.gupao.homework.factory.function.GreeFactory;
 import com.gupao.homework.factory.function.IAppliancesFactory;
 import com.gupao.homework.factory.model.Gree;
@@ -10,10 +10,10 @@ public class Main {
 
     public static void main(String[] args) {
         // 简单工厂
-        testSample();
+        //testSample();
 
         // 方法工厂
-        testFunction();
+        //testFunction();
 
         // 抽象工厂
         testAbstract();
@@ -36,8 +36,10 @@ public class Main {
     }
 
     public static void testAbstract(){
-        AppliancesFactory factory = new AppliancesFactory();
-        IAppliances iAppliances = factory.getGree();
-        System.out.println(iAppliances.getFactoryName());
+        GreeAppliancesFactory factory = new GreeAppliancesFactory();
+        factory.createColdAir().cold();
+
+        HaierAppliancesFactory haierAppliancesFactory = new HaierAppliancesFactory();
+        haierAppliancesFactory.createFreezing().freezing();
     }
 }
