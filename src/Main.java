@@ -5,6 +5,9 @@ import com.gupao.homework.factory.function.GreeFactory;
 import com.gupao.homework.factory.function.IAppliancesFactory;
 import com.gupao.homework.factory.model.Gree;
 import com.gupao.homework.factory.sample.WorkshopFactory;
+import com.gupao.homework.proxy.ITrustee;
+import com.gupao.homework.proxy.MyAgency;
+import com.gupao.homework.proxy.Target;
 
 public class Main {
 
@@ -16,7 +19,10 @@ public class Main {
         //testFunction();
 
         // 抽象工厂
-        testAbstract();
+        //testAbstract();
+
+        // JDK动态代理
+        testMyProxy();
     }
 
     public static void testSample(){
@@ -41,5 +47,17 @@ public class Main {
 
         HaierAppliancesFactory haierAppliancesFactory = new HaierAppliancesFactory();
         haierAppliancesFactory.createFreezing().freezing();
+    }
+
+    public static void testMyProxy(){
+        try {
+
+            ITrustee obj = (ITrustee) new MyAgency().getInstance(new Target());
+            System.out.println(obj.getClass());
+            obj.goodJob();
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }
