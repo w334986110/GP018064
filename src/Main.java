@@ -8,6 +8,8 @@ import com.gupao.homework.factory.sample.WorkshopFactory;
 import com.gupao.homework.proxy.ITrustee;
 import com.gupao.homework.proxy.MyAgency;
 import com.gupao.homework.proxy.Target;
+import com.gupao.homework.strategy.IPayService;
+import com.gupao.homework.strategy.em.ChannelPay;
 
 public class Main {
 
@@ -22,7 +24,10 @@ public class Main {
         //testAbstract();
 
         // JDK动态代理
-        testMyProxy();
+        //testMyProxy();
+
+        // 策略模式
+        testStrategy();
     }
 
     public static void testSample(){
@@ -59,5 +64,10 @@ public class Main {
         }catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    public static void testStrategy(){
+        IPayService payService = ChannelPay.ALI_PAY.getPayService();
+        payService.pay(1L,3000L);
     }
 }
