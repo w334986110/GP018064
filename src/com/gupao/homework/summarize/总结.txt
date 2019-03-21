@@ -48,7 +48,7 @@
         });
     }
 
-2.2 IOC
+2.2 IOC 将接口的声明交给容器
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -76,7 +76,7 @@ public class PaymentService {
 </beans>
 
 
-2.3 DI
+2.3 DI 将服务的实例控制权交给容器
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
