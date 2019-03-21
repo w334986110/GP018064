@@ -1,0 +1,96 @@
+1、用一句自己的话总结学过的设计模式
+工厂模式：一般配合singleton使用，将创建对象的动作隔离，使创建过程变得可扩展
+单例模式：一次只实例化一个对象，节约内存资源
+原型模式：对象赋值，减少对象创建
+代理模式：通过反射，增强扩展功能
+策略模式：相同接口，不同实现类，同一方法结果不同，实现策略不同
+模板模式：父类执行子类功能，由子类实现逻辑
+委派模式：辛劳归我，功劳归你
+适配器模式：用空方法实现接口作为抽象父类
+装饰器模式：类/对象/接口适配器，将接口转换成另一个目标接口，消除不兼容问题。
+观察者模式：你负责生产，我负责通知
+
+2、列举SpringAOP、IOC、DI应用的代码片段。
+
+2.1 AOP 在接口进入时记录请求参数，并在接口响应后记录响应参数
+
+@Pointcut("execution(* yunnex.saofu.pay.service.assemble.SHMDTradeAssemble.dzPayOrderNotify(yunnex.saofu.pay.dto.dz.DZNotifyReq)) && args(dzNotifyReq)")
+    public void dpNotify(DZNotifyReq dzNotifyReq) {}
+
+    @Around("dpNotify(dzNotifyReq)")
+    public DZNotifyRes dpNotifyProcess(ProceedingJoinPoint joinPoint, DZNotifyReq dzNotifyReq) {
+        LOGGER.debug("进入点评通知切面");
+        Date reqTime = new Date();
+        Object[] args = new Object[]{dzNotifyReq};
+        DZNotifyRes res = new DZNotifyRes();
+        try {
+            res = (DZNotifyRes) joinPoint.proceed(args);
+        } catch (Throwable t) {
+            LOGGER.info("点评通知切面出现异常", t);
+            res.sucReceive();
+        }
+        Date resTime = new Date();
+        this.saveDpNotifyMessage(reqTime, resTime, dzNotifyReq, res);
+        return res;
+    }
+
+    private void saveDpNotifyMessage(final Date reqTime, final Date resTime, final DZNotifyReq req, final DZNotifyRes res) {
+        executors.execute(new Runnable() {
+            @Override
+            public void run() {
+                DpNotifyMessage dpNotifyMessage = new DpNotifyMessage();
+                dpNotifyMessage.setRequestTime(reqTime);
+                dpNotifyMessage.setResponseTime(resTime);
+                dpNotifyMessage.setRequest(req.toJSONString());
+                dpNotifyMessage.setResponse(res.toString());
+                dpNotifyMessageMapper.insert(dpNotifyMessage);
+            }
+        });
+    }
+
+2.2 IOC
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+public class PaymentService {
+    IBookDAO bookDAO;
+
+    public BookService() {
+        ApplicationContext ctx=new ClassPathXmlApplicationContext("app-payment-service.xml");
+        bookDAO=(IBookDAO)ctx.getBean("bookdao");
+    }
+
+    public void storeBook(String bookname){
+        String result=bookDAO.addBook(bookname);
+        System.out.println(result);
+    }
+}
+
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:p="http://www.springframework.org/schema/p"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <bean id="bookdao" class="com.yunnex.pay.dao.BookDAO"></bean>
+</beans>
+
+
+2.3 DI
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+public class PaymentService {
+
+    @Autowrite
+    IBookDAO bookDAO;
+
+    public BookService() {
+    }
+
+    public void storeBook(String bookname){
+        String result=bookDAO.addBook(bookname);
+        System.out.println(result);
+    }
+}
